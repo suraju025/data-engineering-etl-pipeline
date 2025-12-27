@@ -1,11 +1,27 @@
+# src/extract.py
 import pandas as pd
-from pathlib import Path
+import os
 
-DATA_PATH = Path("data/raw")
+class Extract:
+    def __init__(self, data_dir="data/raw"):
+        self.data_dir = data_dir
 
-def extract_data():
-    customers = pd.read_csv(DATA_PATH / "customers.csv")
-    orders = pd.read_csv(DATA_PATH / "orders.csv")
-    products = pd.read_csv(DATA_PATH / "products.csv")
+    def read_csv(self, filename):
+        path = os.path.join(self.data_dir, filename)
+        try:
+            df = pd.read_csv(path)
+            print(f"[INFO] Loaded {filename} - {df.shape[0]} rows, {df.shape[1]} columns")
+            return df
+        except FileNotFoundError:
+            print(f"[ERROR] File not found: {path}")
+            return None
 
-    return customers, orders, products
+    def extract_all(self):
+        customers = self.read_csv("customers.csv")
+        orders = self.read_csv("orders.csv")
+        products = self.read_csv("products.csv")
+        return customers, orders, products
+
+if __name__ == "__main__":
+    extractor = Extract()
+    customers, orders, products = extractor.extract_all()
